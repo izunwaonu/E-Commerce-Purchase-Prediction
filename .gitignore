@@ -1,0 +1,11 @@
+# Ignore Python environments
+venv/
+__pycache__/
+*.pyc
+
+# Ignore Mac system files
+.DS_Store
+
+# Ignore Next.js build files (for later)
+node_modules/
+.next/
