@@ -13,7 +13,7 @@ app = FastAPI(title="Group 22 AI Core - MLOps Backend")
 # Allow the Next.js frontend to communicate with this backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, restrict this to localhost:3000
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,6 +31,41 @@ try:
     print("✅ Model and Encoder loaded successfully.")
 except Exception as e:
     print(f"⚠️ Error loading models: {e}")
+
+# --- DYNAMIC PRODUCT DATABASE (The Real Storefront Data) ---
+CATALOG_DB = [
+    {
+        "id": "p_001",
+        "name": "Titan RTX Gaming Laptop",
+        "brand": "asus",
+        "price": 2499.00,
+        "old_price": 2899.00,
+        "image_url": "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=800&q=80",
+        "description": "Experience unparalleled performance with the latest generation architecture, designed for ultra-high framerates.",
+        # Simulating what a user's behavior looks like when viewing this specific product
+        "session_metrics": {"duration": 145.5, "views": 4, "cart_adds": 0} 
+    },
+    {
+        "id": "p_002",
+        "name": "ProArt Studio Display 32\"",
+        "brand": "apple",
+        "price": 1299.00,
+        "old_price": 1499.00,
+        "image_url": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=800&q=80",
+        "description": "Color-accurate 4K monitor perfectly calibrated for professional data scientists and video editors.",
+        "session_metrics": {"duration": 80.2, "views": 2, "cart_adds": 0} 
+    },
+    {
+        "id": "p_003",
+        "name": "GeForce RTX 4090 GPU",
+        "brand": "nvidia",
+        "price": 1599.00,
+        "old_price": 1699.00,
+        "image_url": "https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&w=800&q=80",
+        "description": "The ultimate flagship graphics card. Train machine learning models and render 3D scenes in seconds.",
+        "session_metrics": {"duration": 310.5, "views": 7, "cart_adds": 1} 
+    }
+]
 
 # --- DATA MODELS (Pydantic) ---
 class SessionData(BaseModel):
@@ -50,6 +85,14 @@ class FeedbackData(BaseModel):
 @app.get("/")
 def read_root():
     return {"status": "Active", "system": "Hybrid MLOps Backend Running"}
+
+# NEW: Dynamic Product Endpoint
+@app.get("/api/products")
+def get_products():
+    """
+    Serves the dynamic product catalog to the Next.js frontend.
+    """
+    return {"products": CATALOG_DB}
 
 @app.post("/api/predict")
 def predict_purchase(data: SessionData):
@@ -75,7 +118,7 @@ def predict_purchase(data: SessionData):
         # 4. Generate Business Logic (Bundle Recommendation)
         bundle_type = "None"
         if probability > 0.70:
-            bundle_type = "High-End Peripherals (e.g., Gaming Mouse)"
+            bundle_type = "Premium Protection Plan (+ $99)"
         elif probability > 0.40:
             bundle_type = "Targeted 10% Discount Code"
 
